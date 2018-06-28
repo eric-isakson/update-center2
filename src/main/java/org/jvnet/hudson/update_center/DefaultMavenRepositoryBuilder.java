@@ -23,17 +23,35 @@
  */
 package org.jvnet.hudson.update_center;
 
+import org.kohsuke.args4j.Option;
+
 import java.net.URL;
 
 public class DefaultMavenRepositoryBuilder {
-    
-    private DefaultMavenRepositoryBuilder () {
+
+    @Option(name="-repositoryId",
+            usage="Specify an id of the maven repository.")
+    public String repositoryId = "public";
+
+    @Option(name="-repositoryUrl",
+            usage="Specify an URL of the maven repository.")
+    public String repositoryUrl = "http://repo.jenkins-ci.org/public/";
+
+    @Option(name="-downloadUrl",
+            usage="Specify an URL of the download site.")
+    public String downloadUrl = "http://updates.jenkins-ci.org/download/";
+
+    public DefaultMavenRepositoryBuilder () {
         
     }
     
     public static MavenRepositoryImpl createStandardInstance() throws Exception {
-        MavenRepositoryImpl instance = new MavenRepositoryImpl();
-        instance.addRemoteRepository("public", new URL("http://repo.jenkins-ci.org/public/"));
+        return new DefaultMavenRepositoryBuilder().createInstance();
+    }
+
+    public MavenRepositoryImpl createInstance() throws Exception {
+        MavenRepositoryImpl instance = new MavenRepositoryImpl(new URL(downloadUrl));
+        instance.addRemoteRepository(repositoryId, new URL(repositoryUrl));
 
         return instance;
     }

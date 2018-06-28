@@ -63,6 +63,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -90,8 +91,9 @@ public class MavenRepositoryImpl extends MavenRepository {
     protected ArtifactRepositoryFactory arf;
     private PlexusContainer plexus;
     private boolean offlineIndex;
+    protected URL downloadUrl;
 
-    public MavenRepositoryImpl() throws Exception {
+    public MavenRepositoryImpl(URL downloadUrl) throws Exception {
         ClassWorld classWorld = new ClassWorld( "plexus.core", MavenRepositoryImpl.class.getClassLoader() );
         ContainerConfiguration configuration = new DefaultContainerConfiguration().setClassWorld( classWorld );
         plexus = new DefaultPlexusContainer( configuration );
@@ -111,6 +113,7 @@ public class MavenRepositoryImpl extends MavenRepository {
         local = arf.createArtifactRepository("local",
                 new File(new File(System.getProperty("user.home")), ".m2/repository").toURI().toURL().toExternalForm(),
                 new DefaultRepositoryLayout(), POLICY, POLICY);
+        this.downloadUrl = downloadUrl;
     }
 
     /**
@@ -295,6 +298,16 @@ public class MavenRepositoryImpl extends MavenRepository {
         }
     }
 
+    @Override
+    public URL getURL() throws MalformedURLException {
+        assert remoteRepositories.size() == 1;
+        return new URL(remoteRepositories.get(0).getUrl());
+    }
+
+    @Override
+    public URL getDownloadURL() {
+        return downloadUrl;
+    }
 /*
     Hook for subtypes to use customized implementations.
  */

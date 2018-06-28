@@ -149,6 +149,8 @@ public class Main {
 
     private Signer signer = new Signer();
 
+    private DefaultMavenRepositoryBuilder repositoryBuilder = new DefaultMavenRepositoryBuilder();
+
     public static final String EOL = System.getProperty("line.separator");
 
     public static void main(String[] args) throws Exception {
@@ -158,6 +160,7 @@ public class Main {
     public int run(String[] args) throws Exception {
         CmdLineParser p = new CmdLineParser(this);
         new ClassParser().parse(signer, p);
+        new ClassParser().parse(repositoryBuilder, p);
         try {
             p.parseArgument(args);
 
@@ -273,7 +276,7 @@ public class Main {
     }
 
     protected MavenRepository createRepository() throws Exception {
-        MavenRepository repo = DefaultMavenRepositoryBuilder.createStandardInstance();
+        MavenRepository repo = repositoryBuilder.createInstance();
         if (maxPlugins!=null)
             repo = new TruncatedMavenRepository(repo,maxPlugins);
         if (experimentalOnly)
